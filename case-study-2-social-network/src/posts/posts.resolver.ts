@@ -3,7 +3,7 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { Post } from './schemas/post.schema';
 
-@Resolver((of) => Post)
+@Resolver(() => Post)
 export class PostsResolver {
   constructor(private readonly postsService: PostsService) {}
 
