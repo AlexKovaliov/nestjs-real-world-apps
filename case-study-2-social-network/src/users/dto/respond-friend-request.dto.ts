@@ -1,6 +1,7 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { IsIn, IsMongoId } from 'class-validator';
 import { FriendRequestStatus } from '../enums/friend-request.enum';
+import { NotSameSenderAndRecipient } from '../validators/not-same-sender-recipient.validator';
 
 @InputType()
 export class RespondFriendRequestDto {
@@ -10,6 +11,9 @@ export class RespondFriendRequestDto {
 
   @Field()
   @IsMongoId()
+  @NotSameSenderAndRecipient(
+    'Cannot respond to a friend request to yourself',
+  )
   recipientId: string;
 
   @Field(() => FriendRequestStatus)

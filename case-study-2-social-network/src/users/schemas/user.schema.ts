@@ -25,9 +25,8 @@ export class User extends Document {
   @Prop()
   bio?: string;
 
-  @Field(() => [String], { nullable: true })
-  @Prop({ type: [String] })
-  preferences?: string[];
+  @Prop({ type: Map, of: Boolean, default: {} })
+  preferences: Map<string, boolean>;
 
   @Field(() => GraphQLISODateTime)
   @Prop({ default: Date.now })
