@@ -42,4 +42,12 @@ export class UsersResolver {
   ) {
     return this.usersService.friendRequests(friendRequestsDto);
   }
+
+  @Mutation(() => User)
+  async updatePreferences(
+    @Args('userId') userId: string,
+    @Args('preferences') preferences: Map<string, boolean>,
+  ): Promise<User> {
+    return this.usersService.updatePreferences(userId, preferences);
+  }
 }
