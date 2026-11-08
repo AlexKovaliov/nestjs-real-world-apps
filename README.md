@@ -8,6 +8,7 @@ Each case study is an independent NestJS application with its own dependencies a
 |---|------------|--------|
 | 1 | E-commerce Platform | [`case-study-1-ecommerce`](./case-study-1-ecommerce) |
 | 2 | Social Networking Platform | [`case-study-2-social-network`](./case-study-2-social-network) |
+| 3 | Enterprise Resource Planning System | [`case-study-3-erp`](./case-study-3-erp) |
 
 ## Running a case study
 
@@ -21,4 +22,4 @@ Each project reads its configuration from its own `.env` file.
 
 ## Tech stack
 
-NestJS · TypeScript · TypeORM · PostgreSQL · JWT
+NestJS · TypeScript · TypeORM · PostgreSQL · GraphQL · MongoDB · JWT
