@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { HrModule } from './hr.module.js';
+import { HrModule } from './hr.module';
 import {
   MicroserviceOptions,
   Transport,

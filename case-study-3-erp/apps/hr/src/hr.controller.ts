@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { HrService } from './hr.service.js';
+import { HrService } from './hr.service';
 
 @Controller()
 export class HrController {

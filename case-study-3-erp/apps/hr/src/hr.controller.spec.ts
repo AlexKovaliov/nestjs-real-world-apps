@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { HrController } from './hr.controller.js';
-import { HrService } from './hr.service.js';
+import { HrController } from './hr.controller';
+import { HrService } from './hr.service';
 
 describe('HrController', () => {
   let hrController: HrController;

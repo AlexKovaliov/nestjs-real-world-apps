@@ -27,6 +27,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/hr/tsconfig.app.json"
       }
+    },
+    "payroll": {
+      "type": "application",
+      "root": "apps/payroll",
+      "entryFile": "main",
+      "sourceRoot": "apps/payroll/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/payroll/tsconfig.app.json"
+      }
     }
   }
 }

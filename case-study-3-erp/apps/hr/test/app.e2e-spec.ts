@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types.js';
-import { HrModule } from './../src/hr.module.js';
+import { HrModule } from './../src/hr.module';
 
 describe('HrController (e2e)', () => {
   let app: INestApplication<App>;
