@@ -12,6 +12,8 @@
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "start:dev:hr": "nest start --watch hr",
+    "start:dev:payroll": "nest start --watch payroll",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/api-gateway/main",
     "lint": "oxlint --type-aware apps/ libs/",
@@ -22,10 +24,12 @@
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts"
   },
   "dependencies": {
+    "@nestjs/axios": "^12.0.1",
     "@nestjs/common": "^12.0.1",
     "@nestjs/core": "^12.0.1",
     "@nestjs/microservices": "^12.4.0",
     "@nestjs/platform-express": "^12.0.1",
+    "axios": "^1.21.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
