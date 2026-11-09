@@ -1,18 +1,18 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { MessagePattern } from '@nestjs/microservices';
 import { EmployeesService } from './employees.service';
-import { Employee } from './entities/employee.entity';
 
-@Controller('employees')
+@Controller()
 export class EmployeesController {
   constructor(private readonly employeesService: EmployeesService) {}
 
-  @Get()
-  getEmployees() {
-    return this.employeesService.getEmployees();
+  @MessagePattern({ cmd: 'create_employee' })
+  createEmployee(data: any) {
+    return this.employeesService.createEmployee(data);
   }
 
-  @Post()
-  createEmployee(@Body() data: Employee) {
-    return this.employeesService.createEmployee(data);
+  @MessagePattern({ cmd: 'get_employee' })
+  getEmployee(id: number) {
+    return this.employeesService.getEmployee(id);
   }
 }
