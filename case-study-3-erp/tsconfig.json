@@ -21,7 +21,15 @@
     "types": [
       "vitest/globals",
       "node"
-    ]
+    ],
+    "paths": {
+      "@app/events": [
+        "./libs/events/src/index.ts"
+      ],
+      "@app/events/*": [
+        "./libs/events/src/*"
+      ]
+    }
   },
   "files": [],
   "references": [
