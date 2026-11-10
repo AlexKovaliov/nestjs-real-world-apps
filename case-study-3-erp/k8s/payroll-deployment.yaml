@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payroll-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: payroll-service
+  template:
+    metadata:
+      labels:
+        app: payroll-service
+    spec:
+      containers:
+        - name: payroll-service
+          image: your-docker-repo/payroll-service:latest
+          ports:
+            - containerPort: 3002
+          env:
+            - name: HR_HOST
+              value: hr-service
+            - name: HR_PORT
+              value: "3001"

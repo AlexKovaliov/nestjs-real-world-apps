@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  hr-service:
+    build:
+      context: .
+      args:
+        APP: hr
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+
+  payroll-service:
+    build:
+      context: .
+      args:
+        APP: payroll
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=production
+      - HR_HOST=hr-service
+      - HR_PORT=3001
+    depends_on:
+      - hr-service
