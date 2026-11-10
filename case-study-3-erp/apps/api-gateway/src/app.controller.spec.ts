@@ -26,14 +26,14 @@ describe('AppController', () => {
   });
 
   describe('hr proxy', () => {
-    it('should forward hr requests to the HR service', () => {
+    it('should forward hr requests to the HR service', async () => {
       const req = {
         path: '/hr/employees',
         method: 'GET',
       } as Request;
       const res = {} as Response;
 
-      appController.handleHrRequest(req, res);
+      await appController.handleHrRequest(req, res);
 
       expect(appService.handleRequest).toHaveBeenCalledWith(
         req,

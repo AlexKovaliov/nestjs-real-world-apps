@@ -16,8 +16,8 @@ export class PayrollService implements OnModuleInit {
     this.client = ClientProxyFactory.create({
       transport: Transport.TCP,
       options: {
-        host: '127.0.0.1',
-        port: 3001,
+        host: process.env.HR_HOST ?? '127.0.0.1',
+        port: Number(process.env.HR_PORT ?? 3001),
       },
     });
   }
