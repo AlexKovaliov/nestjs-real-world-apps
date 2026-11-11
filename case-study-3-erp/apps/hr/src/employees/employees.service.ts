@@ -20,6 +20,7 @@ export class EmployeesService {
   }
 
   getEmployee(id: number) {
-    return this.employees.find((emp) => emp.id === id);
+    // return null (not undefined) so the TCP client always receives a reply
+    return this.employees.find((emp) => emp.id === id) ?? null;
   }
 }
