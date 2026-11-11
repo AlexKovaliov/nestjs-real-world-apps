@@ -21,3 +21,7 @@ coverage/
 
 # TypeScript incremental build info
 *.tsbuildinfo
+
+# TLS certificates
+certs/
+*.pem

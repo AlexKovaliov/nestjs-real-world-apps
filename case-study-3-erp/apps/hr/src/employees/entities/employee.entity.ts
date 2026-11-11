@@ -9,4 +9,6 @@ export class Employee {
   name: string;
   email: string;
   department: Department;
+  // annual gross salary
+  salary: number;
 }

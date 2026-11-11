@@ -15,6 +15,10 @@ describe('AppController (e2e)', () => {
     delete: vi.fn(),
   };
 
+  beforeAll(() => {
+    process.env.JWT_SECRET ??= 'e2e-test-secret';
+  });
+
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -27,7 +31,26 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/hr/employees (GET)', () => {
+  const login = async () => {
+    const res = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ username: 'admin', password: 'changeme' })
+      .expect(200);
+    return res.body.access_token as string;
+  };
+
+  it('/auth/login (POST) rejects invalid credentials', () => {
+    return request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ username: 'admin', password: 'wrong' })
+      .expect(401);
+  });
+
+  it('/hr/employees (GET) without a token is rejected', () => {
+    return request(app.getHttpServer()).get('/hr/employees').expect(401);
+  });
+
+  it('/hr/employees (GET) with a valid token', async () => {
     httpService.get.mockReturnValue(
       of({
         status: 200,
@@ -35,8 +58,11 @@ describe('AppController (e2e)', () => {
       }),
     );
 
+    const token = await login();
+
     return request(app.getHttpServer())
       .get('/hr/employees')
+      .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .expect([]);
   });
