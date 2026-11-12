@@ -11,6 +11,10 @@ async function bootstrap() {
   app.useGlobalInterceptors(new APIResponseInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  await app.listen(3000);
+  // Close DB connections cleanly when the host (Docker, PaaS, k8s) sends SIGTERM.
+  app.enableShutdownHooks();
+
+  // Hosting platforms usually assign the port through the PORT env variable.
+  await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
