@@ -1,0 +1,133 @@
+name: Deploy on Production Server
+
+on:
+  push:
+    branches: ['main']
+    paths:
+      - 'case-study-1-ecommerce/**'
+      - '.github/workflows/deploy-production.yml'
+
+concurrency:
+  group: ecommerce-production
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: case-study-1-ecommerce
+
+env:
+  NODE_VERSION: '24'
+
+jobs:
+  deploy:
+    name: Deploy to production
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.APP_URL }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: case-study-1-ecommerce/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build application
+        run: npm run build
+
+      - name: Backup current release for rollback
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USERNAME }}
+          key: ${{ secrets.PROD_KEY }}
+          port: ${{ secrets.PROD_PORT }}
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.PROD_LOCATION }}"
+            mkdir -p .rollback
+            rm -rf .rollback/dist
+            if [ -d dist ]; then
+              cp -a dist .rollback/dist
+            fi
+
+      - name: Copy files to production server
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USERNAME }}
+          key: ${{ secrets.PROD_KEY }}
+          port: ${{ secrets.PROD_PORT }}
+          source: >-
+            case-study-1-ecommerce/dist/,
+            case-study-1-ecommerce/package.json,
+            case-study-1-ecommerce/package-lock.json,
+            case-study-1-ecommerce/ecosystem.config.json
+          target: ${{ secrets.PROD_LOCATION }}
+          strip_components: 1
+
+      - name: Install dependencies and restart app
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USERNAME }}
+          key: ${{ secrets.PROD_KEY }}
+          port: ${{ secrets.PROD_PORT }}
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.PROD_LOCATION }}"
+            npm ci --ignore-scripts --omit=dev
+            npm cache clean --force
+            pm2 restart ecosystem.config.json --update-env || pm2 start ecosystem.config.json
+            pm2 save
+
+      - name: Health check
+        id: health
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+        run: |
+          set -euo pipefail
+          URL="${APP_URL%/}/"
+          for i in $(seq 1 12); do
+            if curl --silent --show-error --max-time 5 -o /dev/null "$URL"; then
+              echo "Healthy after attempt ${i}"
+              exit 0
+            fi
+            echo "Attempt ${i} failed; retrying in 5s..."
+            sleep 5
+          done
+          echo "Health check failed"
+          exit 1
+        working-directory: .
+
+      - name: Rollback on failed health check
+        if: failure() && steps.health.outcome == 'failure'
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.PROD_USERNAME }}
+          key: ${{ secrets.PROD_KEY }}
+          port: ${{ secrets.PROD_PORT }}
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.PROD_LOCATION }}"
+            if [ -d .rollback/dist ]; then
+              rm -rf dist
+              cp -a .rollback/dist dist
+              pm2 restart ecosystem.config.json --update-env
+              pm2 save
+              echo "Rolled back previous dist"
+            else
+              echo "No previous release to roll back to"
+              exit 1
+            fi
