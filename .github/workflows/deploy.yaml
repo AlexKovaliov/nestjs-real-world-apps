@@ -1,0 +1,28 @@
+name: Deploy to Staging
+
+on:
+  workflow_run:
+    workflows: ['Build and Test Pipeline']
+    types: [completed]
+
+concurrency:
+  group: ecommerce-staging
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to Render (staging)
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'develop' &&
+      github.event.workflow_run.event == 'push'
+    environment:
+      name: staging
+      url: ${{ vars.STAGING_APP_URL }}
+    steps:
+      - name: Trigger Render Deployment
+        uses: sws2apps/render-deployment@v2.1.0
+        with:
+          serviceId: ${{ secrets.RENDER_SERVICE_ID }}
+          apiKey: ${{ secrets.RENDER_API_KEY }}

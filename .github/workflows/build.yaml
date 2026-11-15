@@ -1,0 +1,78 @@
+name: Build and Test Pipeline
+
+on:
+  pull_request:
+    branches: ['develop', 'main']
+    paths:
+      - 'case-study-1-ecommerce/**'
+      - '.github/workflows/build.yaml'
+  push:
+    branches: ['develop', 'main']
+    paths:
+      - 'case-study-1-ecommerce/**'
+      - '.github/workflows/build.yaml'
+
+concurrency:
+  group: ecommerce-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: case-study-1-ecommerce
+
+env:
+  NODE_VERSION: '24'
+  APP_DIR: case-study-1-ecommerce
+  JWT_SECRET: ${{ secrets.JWT_SECRET || 'ci-jwt-secret' }}
+  POSTGRES_HOST: ${{ secrets.POSTGRES_HOST || 'localhost' }}
+  POSTGRES_PORT: ${{ secrets.POSTGRES_PORT || '5432' }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER || 'postgres' }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD || 'postgres' }}
+  POSTGRES_DB: ${{ secrets.POSTGRES_DB || 'ecommerce_test' }}
+  GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || 'ci-gemini-key' }}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: case-study-1-ecommerce/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: case-study-1-ecommerce/dist
+          retention-days: 7
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: case-study-1-ecommerce/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Unit tests
+        run: npm test
