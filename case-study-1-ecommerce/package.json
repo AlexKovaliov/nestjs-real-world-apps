@@ -12,6 +12,8 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "start:prof": "node --prof dist/main.js",
+    "prof:process": "node --prof-process isolate-*-v8.log > profile.txt",
     "start:pm2": "pm2 start dist/main.js --name nest-app --cwd .",
     "pm2:monit": "pm2 monit",
     "docker:build": "docker build -t nestjs-app .",

@@ -12,6 +12,13 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+# V8 profiler output
+isolate-*-v8.log
+profile.txt
+
+# Clinic.js output
+.clinic/
+
 # OS
 .DS_Store
 
