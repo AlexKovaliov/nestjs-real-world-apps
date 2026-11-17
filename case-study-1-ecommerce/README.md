@@ -33,6 +33,25 @@ npm run build
 npm run start:prod   # node dist/main
 ```
 
+## Node.js profiling
+
+Use the built-in V8 profiler to inspect CPU time and call patterns:
+
+```bash
+npm run build
+npm run start:prof   # node --prof dist/main.js
+```
+
+While the app is running, exercise the endpoints you care about (for example authenticated routes that hit `AuthGuard`). Stop the process when finished. Node writes an `isolate-*-v8.log` file in the project root.
+
+Turn that raw log into a readable summary:
+
+```bash
+npm run prof:process   # writes profile.txt
+```
+
+Open `profile.txt` and look under the bottom-up / top-down sections for hot functions. The `*.log` files are already covered by `.gitignore`.
+
 ## Tests
 
 ```bash
